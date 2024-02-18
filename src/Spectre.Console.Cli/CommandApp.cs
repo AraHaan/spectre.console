@@ -38,6 +38,23 @@ public sealed class CommandApp : ICommandApp
     }
 
     /// <summary>
+    /// Configures the command line application, with a specifically passed in settings type.
+    /// Great for allowing one to set the default command inside of the configuration delgate
+    /// if they want to do such a thing with the generic version of the
+    /// <see cref="IConfigurator" /> interface.
+    /// </summary>
+    /// <param name="configuration">The configuration.</param>
+    public void Configure<TSettings>(Action<IConfigurator<TSettings>> configuration)
+    {
+        if (configuration == null)
+        {
+            throw new ArgumentNullException(nameof(configuration));
+        }
+
+        configuration(_configurator);
+    }
+
+    /// <summary>
     /// Sets the default command.
     /// </summary>
     /// <typeparam name="TCommand">The command type.</typeparam>
