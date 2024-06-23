@@ -29,6 +29,27 @@ public sealed partial class CommandAppTests
         }
 
         [Fact]
+        [Expectation("Root", "QuestionMark")]
+        public Task Should_Output_Root_Correctly_QuestionMark()
+        {
+            // Given
+            var fixture = new CommandAppTester();
+            fixture.Configure(configurator =>
+            {
+                configurator.SetApplicationName("myapp");
+                configurator.AddCommand<DogCommand>("dog");
+                configurator.AddCommand<HorseCommand>("horse");
+                configurator.AddCommand<GiraffeCommand>("giraffe");
+            });
+
+            // When
+            var result = fixture.Run("-?");
+
+            // Then
+            return Verifier.Verify(result.Output);
+        }
+
+        [Fact]
         [Expectation("Root_Command")]
         public Task Should_Output_Root_Command_Correctly()
         {
@@ -44,6 +65,27 @@ public sealed partial class CommandAppTests
 
             // When
             var result = fixture.Run("horse", "--help");
+
+            // Then
+            return Verifier.Verify(result.Output);
+        }
+
+        [Fact]
+        [Expectation("Root_Command", "QuestionMark")]
+        public Task Should_Output_Root_Command_Correctly_QuestionMark()
+        {
+            // Given
+            var fixture = new CommandAppTester();
+            fixture.Configure(configurator =>
+            {
+                configurator.SetApplicationName("myapp");
+                configurator.AddCommand<DogCommand>("dog");
+                configurator.AddCommand<HorseCommand>("horse");
+                configurator.AddCommand<GiraffeCommand>("giraffe");
+            });
+
+            // When
+            var result = fixture.Run("horse", "-?");
 
             // Then
             return Verifier.Verify(result.Output);
@@ -941,6 +983,45 @@ public sealed partial class CommandAppTests
             fixture.Configure(configurator =>
             {
                 configurator.SetApplicationName("myapp");
+            });
+
+            // When
+            var result = fixture.Run("--help");
+
+            // Then
+            return Verifier.Verify(result.Output);
+        }
+
+        [Fact]
+        [Expectation("NoVersion")]
+        public Task Should_Not_Include_Application_Version_If_Not_Set()
+        {
+            // Given
+            var fixture = new CommandAppTester();
+            fixture.SetDefaultCommand<GenericCommand<ArgumentOrderSettings>>();
+            fixture.Configure(config =>
+            {
+                config.SetApplicationName("myapp");
+            });
+
+            // When
+            var result = fixture.Run("--help");
+
+            // Then
+            return Verifier.Verify(result.Output);
+        }
+
+        [Fact]
+        [Expectation("Version")]
+        public Task Should_Include_Application_Version_If_Set()
+        {
+            // Given
+            var fixture = new CommandAppTester();
+            fixture.SetDefaultCommand<GenericCommand<ArgumentOrderSettings>>();
+            fixture.Configure(config =>
+            {
+                config.SetApplicationName("myapp");
+                config.SetApplicationVersion("0.49.1");
             });
 
             // When
